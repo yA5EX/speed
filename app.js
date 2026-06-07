@@ -166,8 +166,8 @@ function start() {
 
   watchId = navigator.geolocation.watchPosition(onPosition, onError, {
     enableHighAccuracy: true,
-    maximumAge: 0,
-    timeout: 15000
+    maximumAge: 10000,
+    timeout: 60000
   });
 
   render();
@@ -421,17 +421,22 @@ function setMessage(text) {
   window.clearTimeout(setMessage.timer);
   setMessage.timer = window.setTimeout(() => {
     els.messageText.textContent = "";
-  }, 5000);
+  }, 15000);
 }
 
 function onError(error) {
-  setStatus("GPS error", "error");
-  const messages = {
-    1: "Location permission was denied",
-    2: "GPS position is unavailable",
-    3: "GPS request timed out"
+  const statusLabels = {
+    1: "GPS denied",
+    2: "GPS unavailable",
+    3: "GPS timeout"
   };
-  setMessage(messages[error.code] || error.message || "GPS error");
+  const messages = {
+    1: "Location permission was denied. Allow location for this site.",
+    2: "GPS position is unavailable. Move outdoors and keep the screen on.",
+    3: "GPS request timed out. Move outdoors and try again."
+  };
+  setStatus(statusLabels[error.code] || "GPS error", "error");
+  setMessage(`${messages[error.code] || "GPS error"} code=${error.code || "?"} ${error.message || ""}`.trim());
 }
 
 function haversine(lat1, lon1, lat2, lon2) {
