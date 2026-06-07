@@ -39,6 +39,7 @@ let run = createEmptyRun();
 restoreSettings();
 buildSplits();
 render();
+checkPermissionState();
 
 els.startButton.addEventListener("click", start);
 els.stopButton.addEventListener("click", stop);
@@ -156,6 +157,7 @@ function start() {
   }
 
   persistSettings(false);
+  checkPermissionState();
   run = createEmptyRun();
   run.armed = true;
   buildSplits();
@@ -422,6 +424,20 @@ function setMessage(text) {
   setMessage.timer = window.setTimeout(() => {
     els.messageText.textContent = "";
   }, 15000);
+}
+
+async function checkPermissionState() {
+  if (!("permissions" in navigator) || !navigator.permissions.query) return;
+
+  try {
+    const permission = await navigator.permissions.query({ name: "geolocation" });
+    if (permission.state === "denied") {
+      setStatus("GPS blocked", "error");
+      setMessage("This site is blocked from using location. Reset this site's location permission.");
+    }
+  } catch {
+    // Some mobile browsers do not expose geolocation through Permissions API.
+  }
 }
 
 function onError(error) {
