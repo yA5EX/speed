@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SPRINT HUD</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero" aria-label="Sprint HUD">
+        <div>
+          <p class="eyebrow">GPS Sprint Timer</p>
+          <h1>SPRINT HUD</h1>
+        </div>
+        <div class="status" id="statusBox">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">Ready</span>
+        </div>
+      </section>
+
+      <section class="hud">
+        <div class="speed-card">
+          <span class="label">SPEED</span>
+          <strong id="speedValue">0.0</strong>
+          <span class="unit">km/h</span>
+        </div>
+        <div class="sub-card max">
+          <span class="label">MAX</span>
+          <strong id="maxSpeedValue">0.0</strong>
+          <span class="unit">km/h</span>
+        </div>
+        <div class="sub-card">
+          <span class="label">DISTANCE</span>
+          <strong id="distanceValue">0.0</strong>
+          <span class="unit">m</span>
+        </div>
+        <div class="hud-actions">
+          <button class="primary" id="startButton" type="button">START</button>
+          <button id="stopButton" type="button" disabled>STOP</button>
+          <button id="csvButton" type="button">CSV</button>
+        </div>
+      </section>
+
+      <section class="layout">
+        <section class="panel timer-panel">
+          <div class="panel-head">
+            <h2>Splits</h2>
+            <span id="runMeta">No run</span>
+          </div>
+          <div class="split-grid" id="splitGrid"></div>
+        </section>
+
+        <aside class="panel settings-panel">
+          <div class="tabs" role="tablist" aria-label="Settings tabs">
+            <button class="tab active" id="settingsTab" type="button">Settings</button>
+            <button class="tab" id="rankingTab" type="button">Ranking</button>
+          </div>
+
+          <div id="settingsView">
+            <label class="field">
+              <span>User name</span>
+              <input id="userNameInput" type="text" maxlength="32" placeholder="runner">
+            </label>
+            <div class="field-row">
+              <label class="field">
+                <span>Machine</span>
+                <input id="machineInput" type="text" maxlength="40" placeholder="bike name">
+              </label>
+              <label class="field">
+                <span>Displacement</span>
+                <input id="displacementInput" type="number" min="1" max="9999" inputmode="numeric" placeholder="125">
+              </label>
+            </div>
+            <div class="field-row">
+              <label class="field">
+                <span>Auto start</span>
+                <select id="autoStartInput">
+                  <option value="1.5">1.5 m</option>
+                  <option value="2" selected>2 m</option>
+                  <option value="3">3 m</option>
+                  <option value="5">5 m</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Accuracy limit</span>
+                <select id="accuracyInput">
+                  <option value="15">15 m</option>
+                  <option value="25" selected>25 m</option>
+                  <option value="50">50 m</option>
+                  <option value="9999">Off</option>
+                </select>
+              </label>
+            </div>
+            <div class="small-actions">
+              <button id="saveSettingsButton" type="button">SAVE SETTINGS</button>
+              <button class="danger" id="clearButton" type="button">CLEAR LOCAL</button>
+            </div>
+          </div>
+
+          <div id="rankingView" hidden>
+            <div class="ranking-tools">
+              <select id="rankingMetricInput" aria-label="Ranking distance"></select>
+              <button id="refreshRankingButton" type="button">REFRESH</button>
+            </div>
+            <div class="ranking-list" id="rankingList"></div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="panel history-panel">
+        <div class="panel-head">
+          <h2>History</h2>
+          <span id="messageText"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>User</th>
+                <th>Machine</th>
+                <th>Target</th>
+                <th>Finish</th>
+                <th>Max</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
