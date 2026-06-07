@@ -35,6 +35,7 @@ const els = {
 const state = loadState();
 let watchId = null;
 let run = createEmptyRun();
+let gpsRetryUsed = false;
 
 restoreSettings();
 buildSplits();
@@ -159,6 +160,7 @@ function start() {
   persistSettings(false);
   checkPermissionState();
   run = createEmptyRun();
+  gpsRetryUsed = false;
   run.armed = true;
   buildSplits();
   setStatus("Armed", "warn");
@@ -166,13 +168,22 @@ function start() {
   els.startButton.disabled = true;
   els.stopButton.disabled = false;
 
-  watchId = navigator.geolocation.watchPosition(onPosition, onError, {
-    enableHighAccuracy: true,
-    maximumAge: 10000,
-    timeout: 60000
-  });
+  startWatching(true);
 
   render();
+}
+
+function startWatching(highAccuracy) {
+  if (watchId !== null) {
+    navigator.geolocation.clearWatch(watchId);
+    watchId = null;
+  }
+
+  watchId = navigator.geolocation.watchPosition(onPosition, onError, {
+    enableHighAccuracy: highAccuracy,
+    maximumAge: 15000,
+    timeout: 90000
+  });
 }
 
 function stop() {
@@ -451,6 +462,15 @@ function onError(error) {
     2: "GPS position is unavailable. Move outdoors and keep the screen on.",
     3: "GPS request timed out. Move outdoors and try again."
   };
+
+  if ((error.code === 2 || error.code === 3) && !gpsRetryUsed && watchId !== null) {
+    gpsRetryUsed = true;
+    setStatus("GPS retry", "warn");
+    setMessage("High accuracy GPS failed. Retrying with standard location mode.");
+    startWatching(false);
+    return;
+  }
+
   setStatus(statusLabels[error.code] || "GPS error", "error");
   setMessage(`${messages[error.code] || "GPS error"} code=${error.code || "?"} ${error.message || ""}`.trim());
 }
