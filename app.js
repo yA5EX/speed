@@ -145,6 +145,13 @@ function getSplitDistances() {
 function start() {
   if (!("geolocation" in navigator)) {
     setStatus("GPS unavailable", "error");
+    setMessage("Use HTTPS or allow location permission");
+    return;
+  }
+
+  if (!window.isSecureContext) {
+    setStatus("HTTPS required", "error");
+    setMessage("GPS works on HTTPS. Use the GitHub Pages URL on your phone.");
     return;
   }
 
@@ -419,7 +426,12 @@ function setMessage(text) {
 
 function onError(error) {
   setStatus("GPS error", "error");
-  setMessage(error.message || "GPS error");
+  const messages = {
+    1: "Location permission was denied",
+    2: "GPS position is unavailable",
+    3: "GPS request timed out"
+  };
+  setMessage(messages[error.code] || error.message || "GPS error");
 }
 
 function haversine(lat1, lon1, lat2, lon2) {
